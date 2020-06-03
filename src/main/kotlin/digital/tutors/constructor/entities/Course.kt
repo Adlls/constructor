@@ -37,3 +37,5 @@ enum class TypeAccess {
 enum class TypeRelation {
         EXTENDED, REPLACEABLE
 }
+
+interface RelationEntities { }

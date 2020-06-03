@@ -7,8 +7,7 @@ data class Level(
         @Id
         var id: String? = null,
         var htmlBody: String? = null,
-        var enabled: Boolean? = true,
+        var enabled: Boolean? = false,
         @DBRef
         var lesson: Lesson? = null
-
 )
