@@ -26,5 +26,6 @@ data class Topic(
 
 data class RelationToTopic (
         var topic: Topic? = null,
-        var ref: RelationEntities? = null
+        var ref: RelationEntities? = null,
+        var typeRelation: TypeRelation? = null
 )

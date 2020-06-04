@@ -9,7 +9,7 @@ data class TopicVO(
         val title: String?,
         val tags: List<String>?,
         val author: UserVO?,
-        val course: Course?,
+        val course: CourseVO?,
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
         val relation: RelationToTopic?
@@ -22,10 +22,14 @@ data class TopicVO(
                     topic.title,
                     topic.tags,
                     topic.author?.let { UserVO.fromData(it, null) },
-                    topic.course,
+                    topic.course?.let { CourseVO.fromData(it) },
                     topic.fgos,
                     topic.profStandard,
-                    topic.relation
+                    topic.relation?.apply {
+                        this.topic = topic
+                        ref = null
+                        typeRelation = null
+                    }
                 )
     }
 }

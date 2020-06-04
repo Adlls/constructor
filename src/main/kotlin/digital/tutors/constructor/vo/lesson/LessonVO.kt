@@ -13,7 +13,7 @@ data class LessonVO(
         val author: UserVO?,
         val topic: TopicVO?,
         val relation: RelationToLesson?,
-        val levels: List<LevelVO>?
+        val levels: List<Level>?
 ) {
     companion object {
         fun fromData(lesson: Lesson): LessonVO =
@@ -26,7 +26,7 @@ data class LessonVO(
                             lesson2 = null
                             typeRelation = null
                         },
-                        lesson.levels?.map { LevelVO.fromData(it) }
+                        lesson.levels
                 )
     }
 }

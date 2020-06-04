@@ -8,7 +8,7 @@ data class LevelVO(
         val id: String?,
         val htmlBody: String?,
         val enabled: Boolean?,
-        val lesson: Lesson?
+        val lesson: LessonVO?
 )
 {
  companion object {
@@ -17,7 +17,7 @@ data class LevelVO(
                      level.id,
                      level.htmlBody,
                      level.enabled,
-                     level.lesson
+                     level.lesson?.let { LessonVO.fromData(it) }
              )
     }
 }
