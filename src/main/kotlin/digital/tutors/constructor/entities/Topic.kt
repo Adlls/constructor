@@ -22,7 +22,7 @@ data class Topic(
         var profStandard: List<ProfStandard>? = null,
         var relation: RelationToTopic? = null
 
-        ): AuditableEntity(), RelationEntities
+        ): AuditableEntity(), Entity, RelationEntities
 
 data class RelationToTopic (
         var topic: Topic? = null,

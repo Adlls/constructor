@@ -8,7 +8,7 @@ data class ProfStandard (
         @Id
         var id: String? = null,
 
-        var numProfStandard: Int? = null,
+        var numProfStandard: String? = null,
         var title: String? = null,
         var description: String? = null
-)
+): Entity

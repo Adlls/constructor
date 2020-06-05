@@ -13,3 +13,5 @@ data class CreateRqCourse (
         val skills: List<String>?,
         val typeAccess: TypeAccess?
 )
+
+

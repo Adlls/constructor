@@ -19,7 +19,7 @@ data class Lesson(
         var levels: List<Level>? = null
 
 
-): AuditableEntity(), RelationEntities
+): AuditableEntity(), RelationEntities, Entity
 
 data class RelationToLesson(
 

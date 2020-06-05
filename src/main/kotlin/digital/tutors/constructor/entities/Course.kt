@@ -28,7 +28,7 @@ data class Course (
 
         var typeAccess: TypeAccess? = TypeAccess.PUBLIC
 
-        ): AuditableEntity()
+        ): Entity, AuditableEntity()
 
 enum class TypeAccess {
     PUBLIC, PRIVATE

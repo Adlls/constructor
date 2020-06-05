@@ -10,4 +10,4 @@ data class Level(
         var enabled: Boolean? = false,
         @DBRef
         var lesson: Lesson? = null
-)
+): Entity

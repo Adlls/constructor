@@ -9,6 +9,7 @@ import digital.tutors.constructor.repositories.CourseRepository
 import digital.tutors.constructor.services.CourseService
 import digital.tutors.constructor.vo.course.CourseVO
 import digital.tutors.constructor.vo.course.CreateRqCourse
+import digital.tutors.constructor.vo.course.CreatorCourseVO
 import digital.tutors.constructor.vo.course.UpdateRqCourse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -59,11 +60,11 @@ class CourseServiceImpl: CourseService {
 
     @Throws(EntityNotFoundException::class)
     override fun getAllCourses(pageable: Pageable): Page<CourseVO> {
-        return courseRepository.findAll(pageable).map(::toCourseVO)
+        return courseRepository.findAll(pageable).map(::toVO)
     }
 
     override fun getCourseById(id: String): CourseVO {
-        return courseRepository.findById(id).map(::toCourseVO).orElseThrow {
+        return courseRepository.findById(id).map(::toVO).orElseThrow {
             throw EntityNotFoundException("Course with $id not found")
         }
     }
@@ -75,8 +76,8 @@ class CourseServiceImpl: CourseService {
         return course
     }
 
-    fun toCourseVO(course: Course): CourseVO {
-        return CourseVO.fromData(course)
+    override fun toVO(course: Course): CourseVO {
+        return CreatorCourseVO.fromData(course) as CourseVO
     }
 
 }

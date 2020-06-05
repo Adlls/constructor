@@ -9,7 +9,7 @@ data class Fgos(
         @Id
         var id: String? = null,
 
-        var numFgos: Int? = null,
+        var numFgos: String? = null,
         var title: String? = null,
         var description: String? = null
-)
+): Entity

@@ -2,7 +2,10 @@ package digital.tutors.constructor.vo.topic
 
 import digital.tutors.constructor.auth.vo.UserVO
 import digital.tutors.constructor.entities.*
+import digital.tutors.constructor.vo.CreatorVO
+import digital.tutors.constructor.vo.VO
 import digital.tutors.constructor.vo.course.CourseVO
+import digital.tutors.constructor.vo.course.CreatorCourseVO
 
 data class TopicVO(
         val id: String?,
@@ -13,16 +16,18 @@ data class TopicVO(
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
         val relation: RelationToTopic?
-        )
-{
-    companion object {
-        fun fromData(topic: Topic): TopicVO =
-                TopicVO(
+): VO
+
+class CreatorTopicVO {
+    companion object: CreatorVO() {
+        override fun fromData(entity: Entity): VO {
+            val topic = entity as Topic
+            return TopicVO(
                     topic.id,
                     topic.title,
                     topic.tags,
                     topic.author?.let { UserVO.fromData(it, null) },
-                    topic.course?.let { CourseVO.fromData(it) },
+                    topic.course?.let { CreatorCourseVO.fromData(it) } as CourseVO?,
                     topic.fgos,
                     topic.profStandard,
                     topic.relation?.apply {
@@ -30,6 +35,8 @@ data class TopicVO(
                         ref = null
                         typeRelation = null
                     }
-                )
+            )
+        }
+
     }
 }

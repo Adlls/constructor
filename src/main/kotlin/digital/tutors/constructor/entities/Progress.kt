@@ -11,7 +11,7 @@ data class Progress(
         var lessonProgress: LessonProgress? = null,
         var topicProgress: TopicProgress? = null,
         var student: User? = null
-)
+): Entity
 
 data class TopicProgress (
         var progress: Int? = null,
