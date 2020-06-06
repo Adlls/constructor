@@ -1,6 +1,6 @@
 package digital.tutors.constructor.core.exception
 
-open class AutocheckerException : Exception {
+open class ConstructorException : Exception {
     constructor() : super()
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

@@ -3,12 +3,9 @@ package digital.tutors.constructor.services.impl
 import digital.tutors.constructor.auth.entities.User
 import digital.tutors.constructor.auth.services.impl.UserServiceImpl
 import digital.tutors.constructor.core.exception.EntityNotFoundException
-import digital.tutors.constructor.entities.Course
-import digital.tutors.constructor.entities.Topic
+import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.TopicRepository
 import digital.tutors.constructor.services.TopicService
-import digital.tutors.constructor.vo.CreatorVO
-import digital.tutors.constructor.vo.VO
 import digital.tutors.constructor.vo.topic.CreateRqTopic
 import digital.tutors.constructor.vo.topic.CreatorTopicVO
 import digital.tutors.constructor.vo.topic.TopicVO
@@ -19,7 +16,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
-import javax.swing.text.html.parser.Entity
 
 @Service
 class TopicServiceImpl: TopicService {
@@ -29,14 +25,16 @@ class TopicServiceImpl: TopicService {
     @Autowired
     lateinit var topicRepository: TopicRepository
 
+    @Throws(EntityNotFoundException::class)
     override fun getTopicById(id: String): TopicVO {
        return topicRepository.findById(id).map(::toVO).orElseThrow {
             throw EntityNotFoundException("Topic not found with $id")
         }
     }
 
+    @Throws(EntityNotFoundException::class)
     override fun getAllTopics(pageable: Pageable): Page<TopicVO> {
-        TODO("Not yet implemented")
+        return topicRepository.findAll(pageable).map(::toVO)
     }
 
     override fun createTopic(createRqTopic: CreateRqTopic): TopicVO {
@@ -47,24 +45,26 @@ class TopicServiceImpl: TopicService {
             course = Course(id = createRqTopic.course?.id)
             fgos = createRqTopic.fgos
             profStandard = createRqTopic.profStandard
-            relation = createRqTopic.relation
+            relations = createRqTopic.relations
         }).id ?: throw IllegalArgumentException("Bad id request")
+
         log.debug("Created topic $id")
         return getTopicById(id)
     }
-
+    @Throws(EntityNotFoundException::class)
     override fun updateTopic(id: String, updateRqTopic: UpdateRqTopic): TopicVO {
         topicRepository.save(topicRepository.findById(id).get().apply {
             title = updateRqTopic.title
             tags = updateRqTopic.tags
             fgos = updateRqTopic.fgos
             profStandard = updateRqTopic.profStandard
-            relation = updateRqTopic.relation
+            relations = updateRqTopic.relations
         })
         log.debug("Updated topic $id")
         return getTopicById(id)
     }
 
+    @Throws(EntityNotFoundException::class)
     override fun deleteTopic(id: String): TopicVO {
         val topic = getTopicById(id)
         topicRepository.deleteById(id)

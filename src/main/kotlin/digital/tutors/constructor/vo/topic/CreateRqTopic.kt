@@ -13,5 +13,5 @@ data class CreateRqTopic(
         val course: CourseVO?,
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
-        val relation: RelationToTopic?
+        val relations: RelationToTopic?
 )

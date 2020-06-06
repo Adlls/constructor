@@ -9,5 +9,5 @@ data class UpdateRqTopic(
         val tags: List<String>?,
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
-        val relation: RelationToTopic?
+        val relations: RelationToTopic?
 )

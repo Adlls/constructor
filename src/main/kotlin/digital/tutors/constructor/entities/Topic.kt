@@ -16,16 +16,37 @@ data class Topic(
         var author: User? = null,
         @DBRef
         var course: Course? = null,
-        @DBRef
+
         var fgos: List<Fgos>? = null,
-        @DBRef
         var profStandard: List<ProfStandard>? = null,
-        var relation: RelationToTopic? = null
+
+        var relations: RelationToTopic? = null
 
         ): AuditableEntity(), Entity, RelationEntities
 
+data class Fgos (
+        var numFgos: String? = null,
+        var title: String? = null,
+        var description: String? = null
+)
+
+data class ProfStandard (
+        var numProfStandard: String? = null,
+        var title: String? = null,
+        var description: String? = null
+)
+
 data class RelationToTopic (
-        var topic: Topic? = null,
-        var ref: RelationEntities? = null,
-        var typeRelation: TypeRelation? = null
+        var refTopics: List<BodyRefTopic>? = null,
+        var refLessons: List<BodyRefLesson>? = null
+)
+
+data class BodyRefTopic (
+        var idTopic: String?,
+        var typeRelation: TypeRelation?
+)
+
+data class BodyRefLesson (
+        var idLesson: String?,
+        var typeRelation: TypeRelation?
 )

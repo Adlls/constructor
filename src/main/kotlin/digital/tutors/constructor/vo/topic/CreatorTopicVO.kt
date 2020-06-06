@@ -15,7 +15,7 @@ data class TopicVO(
         val course: CourseVO?,
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
-        val relation: RelationToTopic?
+        val relations: RelationToTopic?
 ): VO
 
 class CreatorTopicVO {
@@ -30,11 +30,7 @@ class CreatorTopicVO {
                     topic.course?.let { CreatorCourseVO.fromData(it) } as CourseVO?,
                     topic.fgos,
                     topic.profStandard,
-                    topic.relation?.apply {
-                        this.topic = topic
-                        ref = null
-                        typeRelation = null
-                    }
+                    topic.relations
             )
         }
 
