@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.mapping.DBRef
 data class Topic(
         @Id
         var id: String? = null,
-
         var title: String? = null,
         var tags: List<String>? = null,
 

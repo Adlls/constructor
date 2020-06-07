@@ -10,7 +10,7 @@ data class CreateRqTopic(
         val title: String,
         val tags: List<String>?,
         val author: EntityRefRq?,
-        val course: CourseVO?,
+        val course: EntityRefRq?,
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
         val relations: RelationToTopic?

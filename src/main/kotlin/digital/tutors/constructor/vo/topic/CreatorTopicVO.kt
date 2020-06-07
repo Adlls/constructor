@@ -8,6 +8,7 @@ import digital.tutors.constructor.vo.course.CourseVO
 import digital.tutors.constructor.vo.course.CreatorCourseVO
 
 data class TopicVO(
+
         val id: String?,
         val title: String?,
         val tags: List<String>?,
@@ -16,6 +17,7 @@ data class TopicVO(
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
         val relations: RelationToTopic?
+
 ): VO
 
 class CreatorTopicVO {

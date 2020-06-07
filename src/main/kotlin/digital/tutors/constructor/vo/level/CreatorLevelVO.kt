@@ -1,7 +1,6 @@
 package digital.tutors.constructor.vo.level
 
 import digital.tutors.constructor.entities.Entity
-import digital.tutors.constructor.entities.Lesson
 import digital.tutors.constructor.entities.Level
 import digital.tutors.constructor.vo.CreatorVO
 import digital.tutors.constructor.vo.VO
@@ -12,7 +11,7 @@ data class LevelVO(
         val id: String?,
         val htmlBody: String?,
         val enabled: Boolean?,
-        val lesson: LessonVO?
+        val lessonId: String?
 ): VO
 
 class CreatorLevelVO {
@@ -23,9 +22,8 @@ class CreatorLevelVO {
                     level.id,
                     level.htmlBody,
                     level.enabled,
-                    level.lesson?.let { CreatorLessonVO.fromData(it) } as LessonVO
+                    level.lessonId
            )
         }
-
     }
 }

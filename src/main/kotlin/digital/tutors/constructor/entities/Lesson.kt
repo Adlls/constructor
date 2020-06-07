@@ -15,17 +15,12 @@ data class Lesson(
         var author: User? = null,
         @DBRef
         var topic: Topic? = null,
-        var relation: RelationToLesson? = null,
+        var relations: RelationToLesson? = null,
         var levels: List<Level>? = null
 
 
 ): AuditableEntity(), RelationEntities, Entity
 
 data class RelationToLesson(
-
-        @DBRef
-        var lesson: Lesson? = null,
-        @DBRef
-        var lesson2: Lesson? = null,
-        var typeRelation: TypeRelation? = null
+        var refLessons: List<BodyRefLesson>?
 )
