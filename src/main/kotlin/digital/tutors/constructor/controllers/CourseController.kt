@@ -28,9 +28,11 @@ class CourseController: BaseController() {
     @GetMapping("/courses")
     fun getCourses(@RequestParam page: Int): ResponseEntity<Page<CourseVO>> {
       return  processServiceExceptions {
+
             try {
+                val userId = authorizationService.currentUserIdOrDie()
                 val pageRequest = PageRequest.of(page, 10)
-                ResponseEntity.ok(courseService.getAllCourses(pageRequest))
+                ResponseEntity.ok(courseService.getAllCoursesByUserId(pageRequest, userId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Courses not found", ex)
             }
@@ -41,7 +43,8 @@ class CourseController: BaseController() {
     fun getCourseById(@PathVariable id: String): ResponseEntity<CourseVO> {
         return processServiceExceptions {
             try {
-                ResponseEntity.ok(courseService.getCourseById(id))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(courseService.getCourseByIdAndByUserId(id, userId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course with id $id not found", ex)
             }
@@ -51,7 +54,8 @@ class CourseController: BaseController() {
     @PostMapping("/course")
     fun createCourse(@RequestBody createRqCourse: CreateRqCourse): ResponseEntity<CourseVO> {
         return processServiceExceptions {
-                ResponseEntity.ok(courseService.createCourse(createRqCourse))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(courseService.createCourseByUserId(createRqCourse, userId))
         }
     }
 
@@ -59,7 +63,8 @@ class CourseController: BaseController() {
     fun updateCourse(@PathVariable id :String, @RequestBody updateRqCourse: UpdateRqCourse): ResponseEntity<CourseVO> {
         return processServiceExceptions {
             try {
-                ResponseEntity.ok(courseService.updateCourse(id, updateRqCourse))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(courseService.updateCourseByUserId(id, updateRqCourse, userId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course with id $id not found", ex)
             }
@@ -70,11 +75,11 @@ class CourseController: BaseController() {
     fun deleteCourse(@PathVariable id: String): ResponseEntity<CourseVO> {
         return processServiceExceptions {
             try {
-                ResponseEntity.ok(courseService.delete(id))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(courseService.deleteCourseByUserId(id, userId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Course with id $id not found", ex)
             }
         }
     }
-
 }

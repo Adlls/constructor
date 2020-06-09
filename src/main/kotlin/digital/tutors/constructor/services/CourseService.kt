@@ -13,19 +13,19 @@ import org.springframework.data.domain.Pageable
 interface CourseService {
 
     @Throws(EntityNotFoundException::class)
-    fun createCourse(createRqCourse: CreateRqCourse): CourseVO
+    fun createCourseByUserId(createRqCourse: CreateRqCourse, userId: String): CourseVO
 
     @Throws(EntityNotFoundException::class)
-    fun updateCourse(id: String, updateRqCourse: UpdateRqCourse): CourseVO
+    fun updateCourseByUserId(id: String, updateRqCourse: UpdateRqCourse, userId: String): CourseVO
 
     @Throws(EntityNotFoundException::class)
-    fun getAllCourses(pageable: Pageable): Page<CourseVO>
+    fun getAllCoursesByUserId(pageable: Pageable, idUser: String): Page<CourseVO>
 
     @Throws(EntityNotFoundException::class)
-    fun getCourseById(id: String): CourseVO
+    fun getCourseByIdAndByUserId(id: String, userId: String): CourseVO
 
     @Throws(EntityNotFoundException::class)
-    fun delete(id: String): CourseVO
+    fun deleteCourseByUserId(id: String, userId: String): CourseVO
 
     fun toVO(course: Course): CourseVO
 

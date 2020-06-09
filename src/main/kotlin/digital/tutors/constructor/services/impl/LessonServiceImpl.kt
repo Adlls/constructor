@@ -49,7 +49,7 @@ class LessonServiceImpl: LessonService {
             author = User(id = createRqLesson.author?.id)
             topic = Topic(id = createRqLesson.topic?.id)
             relations = createRqLesson.relations
-            levels = createRqLesson.levels.map { Level(it.id) }
+            levels = createRqLesson.levels?.map { Level(it.id) }
         }).id ?: throw IllegalArgumentException("Bad id request")
         log.debug("Created lesson $id")
         return getLessonById(id)
@@ -60,7 +60,7 @@ class LessonServiceImpl: LessonService {
         lessonRepository.save(lessonRepository.findById(id).get().apply {
             topic = Topic(id = updateRqLesson.topic?.id)
             relations = updateRqLesson.relations
-            levels = updateRqLesson.levels
+            levels = updateRqLesson.levels?.map { Level(id = it.id) }
         })
         log.debug("Updated lesson $id")
         return getLessonById(id)

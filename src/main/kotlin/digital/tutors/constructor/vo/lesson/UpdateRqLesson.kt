@@ -7,5 +7,5 @@ import digital.tutors.constructor.entities.RelationToLesson
 data class UpdateRqLesson(
         val topic: EntityRefRq?,
         val relations: RelationToLesson?,
-        val levels: List<Level>
+        val levels: List<EntityRefRq>?
 )

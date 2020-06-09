@@ -11,7 +11,7 @@ data class LevelVO(
         val id: String?,
         val htmlBody: String?,
         val enabled: Boolean?,
-        val lessonId: String?
+        val lesson: LessonVO?
 ): VO
 
 class CreatorLevelVO {
@@ -22,7 +22,7 @@ class CreatorLevelVO {
                     level.id,
                     level.htmlBody,
                     level.enabled,
-                    level.lessonId
+                    level.lesson?.let { CreatorLessonVO.fromData(it) } as LessonVO?
            )
         }
     }

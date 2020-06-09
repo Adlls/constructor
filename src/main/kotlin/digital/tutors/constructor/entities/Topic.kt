@@ -41,11 +41,11 @@ data class RelationToTopic (
 )
 
 data class BodyRefTopic (
-        var idTopic: String?,
+        var IdTopic: String?,
         var typeRelation: TypeRelation?
 )
 
 data class BodyRefLesson (
-        var idLesson: String?,
+        var IdLesson: String?,
         var typeRelation: TypeRelation?
 )
