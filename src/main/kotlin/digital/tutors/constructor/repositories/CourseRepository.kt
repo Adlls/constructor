@@ -12,9 +12,11 @@ interface CourseRepository: MongoRepository<Course, String> {
     fun findByTypeAccessEqualsOrFollowersContains(typeAccess: TypeAccess, user: User, pageable: Pageable): Page<Course>
     fun findByContributorsContainsOrAuthor(user: User, pageable: Pageable): Page<Course>
 
-    fun findByTypeAccessEqualsOrFollowersContains(typeAccess: TypeAccess, user: User): Course
-    fun findByContributorsContainsOrAuthor(user: User): Course
+    fun findByIdAndTypeAccessEqualsOrFollowersContains(courseId: String, typeAccess: TypeAccess, user: User): Course
+    fun findByIdAndContributorsContainsOrAuthor(courseId: String, user: User): Course
 
-    fun existsCourseByAuthor(user: User): Boolean
-    fun existsCourseByContributors(user: User): Boolean
+    fun existsCourseByIdAndAuthor(id: String, user: User): Boolean
+    fun existsCourseByIdAndContributors(id: String, user: User): Boolean
+    fun existsCourseByIdAndFollowers(id: String, user: User): Boolean
+
 }

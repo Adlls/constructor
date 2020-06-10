@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable
 
 interface CourseService {
 
+
     @Throws(EntityNotFoundException::class)
     fun createCourseByUserId(createRqCourse: CreateRqCourse, userId: String): CourseVO
 
@@ -26,6 +27,15 @@ interface CourseService {
 
     @Throws(EntityNotFoundException::class)
     fun deleteCourseByUserId(id: String, userId: String): CourseVO
+
+    @Throws(EntityNotFoundException::class)
+    fun getCoursesByAuthorId(userId: String): List<Course>
+
+    @Throws(EntityNotFoundException::class)
+    fun getCoursesByFollowers(userId: String): List<Course>
+
+    @Throws(EntityNotFoundException::class)
+    fun getCoursesByDistributors(userId: String): List<Course>
 
     fun toVO(course: Course): CourseVO
 

@@ -41,32 +41,41 @@ class CourseServiceImpl: CourseService {
     override fun createCourseByUserId(createRqCourse: CreateRqCourse, userId: String): CourseVO {
         val user = getUser(userId)
         //Студент не может создавать курсы
-        if (user.role == Roles.ROLE_STUDENT) {
-            throw ExceptionInInitializerError("Denied")
-        } else {
-            val id = courseRepository.save(Course().apply {
-                title = createRqCourse.title
-                description = createRqCourse.description
-                author = User(createRqCourse.author?.id)
-                contributors = createRqCourse.contributors?.map { User(it.id) }
-                followers = createRqCourse.followers?.map { User(it.id) }
-                keywords = createRqCourse.keywords
-                skills = createRqCourse.skills
-                typeAccess = createRqCourse.typeAccess
-            }).id ?: throw IllegalArgumentException("Bad id returned")
-            log.debug("Created course $id")
-            return getCourseByIdAndByUserId(id, userId)
+        when (user.role) {
+            Roles.ROLE_STUDENT -> {
+                throw ExceptionInInitializerError("Denied")
+            }
+            Roles.ROLE_TEACHER -> {
+                val id = courseRepository.save(Course().apply {
+                    title = createRqCourse.title
+                    description = createRqCourse.description
+                    author = User(createRqCourse.author?.id)
+                    contributors = createRqCourse.contributors?.map { User(it.id) }
+                    followers = createRqCourse.followers?.map { User(it.id) }
+                    keywords = createRqCourse.keywords
+                    skills = createRqCourse.skills
+                    typeAccess = createRqCourse.typeAccess
+                }).id ?: throw IllegalArgumentException("Bad id returned")
+                log.debug("Created course $id")
+                return getCourseByIdAndByUserId(id, userId)
+            }
+            else -> {
+                throw ExceptionInInitializerError("Denied")
+            }
         }
     }
 
     override fun updateCourseByUserId(id: String, updateRqCourse: UpdateRqCourse, userId: String): CourseVO {
         val user = getUser(userId)
-        //Проверяем не студент ли
-        //Также проверяем, если это преподователь, то нужно чтобы он был либо автором либо соавтором
+        /*
+            TODO: Проверяем не студент ли
+            TODO: Также проверяем, если это преподователь, то нужно чтобы он был либо автором либо соавтором
+        */
         if (user.role != Roles.ROLE_STUDENT) {
             if ((user.role == Roles.ROLE_TEACHER
-                            && courseRepository.existsCourseByAuthor(user))
-                    || courseRepository.existsCourseByContributors(user)) {
+                            && courseRepository.existsCourseByIdAndAuthor(id, user))
+                            || courseRepository.existsCourseByIdAndContributors(id, user)) {
+
                 courseRepository.save(courseRepository.findById(id).get().apply {
                     title = updateRqCourse.title
                     description = updateRqCourse.description
@@ -92,17 +101,23 @@ class CourseServiceImpl: CourseService {
 
         return when (user.role) {
             Roles.ROLE_STUDENT -> {
-                //Если студент пытается попасть на публичный курс, у него это легко выйдет
-                //Если он попытается попасть на приватный курс и если его нет в массиве followers,
-                // то он не получит доступ, хех хацкер
+                /*
+                    TODO: Если студент пытается попасть на публичный курс, у него это легко выйдет
+                          Если он попытается попасть на приватный курс и если его нет в массиве followers,
+                          то он не получит доступ, хех хацкер
+                */
+
                 courseRepository.findByTypeAccessEqualsOrFollowersContains(TypeAccess.PUBLIC, user, pageable).map(::toVO)
             }
             Roles.ROLE_TEACHER -> {
-                //Получить курсы могут только те преподы, которые являются сооавторами или создателями курса
+                /*
+                    TODO: Получить курсы могут только те преподы,
+                          которые являются сооавторами или создателями курса
+                */
                 courseRepository.findByContributorsContainsOrAuthor(user, pageable).map(::toVO)
             }
             else -> {
-                throw EntityNotFoundException("Not found course by $userId")
+                throw EntityNotFoundException("Not found course for user with id $userId")
             }
         }
     }
@@ -110,31 +125,31 @@ class CourseServiceImpl: CourseService {
     @Throws(EntityNotFoundException::class)
     override fun getCourseByIdAndByUserId(id: String, userId: String): CourseVO {
         val user = getUser(userId)
-
-        //Логика такая же, как и для getAllCoursesByUserId
+        /*
+            TODO: Логика такая же, как и для getAllCoursesByUserId
+        */
         return when (user.role) {
             Roles.ROLE_STUDENT -> {
-                toVO(courseRepository.findByTypeAccessEqualsOrFollowersContains(TypeAccess.PUBLIC, user))
+                toVO(courseRepository.findByIdAndTypeAccessEqualsOrFollowersContains(id, TypeAccess.PUBLIC, user))
             }
             Roles.ROLE_TEACHER -> {
-                toVO(courseRepository.findByContributorsContainsOrAuthor(user))
+                toVO(courseRepository.findByIdAndContributorsContainsOrAuthor(id, user))
             }
             else -> {
-                throw EntityNotFoundException("Course with $id not found")
+                throw EntityNotFoundException("Course with user id $userId not found")
             }
         }
     }
 
-
-
     override fun deleteCourseByUserId(id: String, userId: String): CourseVO {
         val course = getCourseByIdAndByUserId(id, userId)
         val user = getUser(userId)
-
-        //Проверяем, является ли пользователь студентом, если да, то не даем ему удалять курс
-        //Если это преподователь и если он автор этого курса, то он может удалить этот курс
+        /*
+            TODO: Проверяем, является ли пользователь студентом, если да, то не даем ему удалять курс
+            TODO: Если это преподователь и если он автор этого курса, то он может удалить этот курс
+         */
         if (user.role != Roles.ROLE_STUDENT) {
-            if (user.role == Roles.ROLE_TEACHER && courseRepository.existsCourseByAuthor(user)) {
+            if (user.role == Roles.ROLE_TEACHER && courseRepository.existsCourseByIdAndAuthor(id, user)) {
                 courseRepository.deleteById(id)
                 log.debug("Deleted course with $id")
                 return course
@@ -144,6 +159,18 @@ class CourseServiceImpl: CourseService {
         } else {
             throw ExceptionInInitializerError("Denied")
         }
+    }
+
+    override fun getCoursesByAuthorId(userId: String): List<Course> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCoursesByFollowers(userId: String): List<Course> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCoursesByDistributors(userId: String): List<Course> {
+        TODO("Not yet implemented")
     }
 
     override fun toVO(course: Course): CourseVO {

@@ -14,6 +14,9 @@ data class Topic(
         @DBRef
         var author: User? = null,
         @DBRef
+        var contributors: List<User>? = null,
+
+        @DBRef
         var course: Course? = null,
 
         var fgos: List<Fgos>? = null,

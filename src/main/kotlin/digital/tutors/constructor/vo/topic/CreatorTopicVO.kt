@@ -1,5 +1,6 @@
 package digital.tutors.constructor.vo.topic
 
+import digital.tutors.constructor.auth.entities.User
 import digital.tutors.constructor.auth.vo.UserVO
 import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.vo.CreatorVO
@@ -13,6 +14,7 @@ data class TopicVO(
         val title: String?,
         val tags: List<String>?,
         val author: UserVO?,
+        val contributors: List<User>?,
         val course: CourseVO?,
         val fgos: List<Fgos>?,
         val profStandard: List<ProfStandard>?,
@@ -29,6 +31,7 @@ class CreatorTopicVO {
                     topic.title,
                     topic.tags,
                     topic.author?.let { UserVO.fromData(it, null) },
+                    topic.contributors,
                     topic.course?.let { CreatorCourseVO.fromData(it) } as CourseVO?,
                     topic.fgos,
                     topic.profStandard,

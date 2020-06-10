@@ -1,7 +1,9 @@
 package digital.tutors.constructor.controllers
 
+import digital.tutors.constructor.core.auth.AuthorizationService
 import digital.tutors.constructor.core.controller.BaseController
 import digital.tutors.constructor.core.exception.EntityNotFoundException
+import digital.tutors.constructor.services.CourseService
 import digital.tutors.constructor.services.TopicService
 import digital.tutors.constructor.vo.topic.CreateRqTopic
 import digital.tutors.constructor.vo.topic.TopicVO
@@ -21,12 +23,21 @@ class TopicController: BaseController() {
     @Autowired
     lateinit var topicService: TopicService
 
+    @Autowired
+    lateinit var authorizationService: AuthorizationService
+
+    @Autowired
+    lateinit var courseService: CourseService
+
+
     @GetMapping("/topics")
-    fun getTopics(@RequestParam page: Int): ResponseEntity<Page<TopicVO>> {
+    fun getTopics(@RequestParam page: Int, @RequestParam courseId: String): ResponseEntity<Page<TopicVO>> {
         return processServiceExceptions {
             try {
+                val userId = authorizationService.currentUserIdOrDie()
+
                 val pageRequest = PageRequest.of(page, 10)
-                ResponseEntity.ok(topicService.getAllTopics(pageRequest))
+                ResponseEntity.ok(topicService.getAllTopics(pageRequest, userId, courseId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Topics not found", ex)
             }
@@ -37,7 +48,8 @@ class TopicController: BaseController() {
     fun getTopicById(@PathVariable id: String): ResponseEntity<TopicVO> {
         return processServiceExceptions {
             try {
-                ResponseEntity.ok(topicService.getTopicById(id))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(topicService.getTopicById(id, userId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Topic with id $id not found", ex)
             }
@@ -47,7 +59,8 @@ class TopicController: BaseController() {
     @PostMapping("/topic")
     fun createTopic(@RequestBody createRqTopic: CreateRqTopic): ResponseEntity<TopicVO> {
         return processServiceExceptions {
-                ResponseEntity.ok(topicService.createTopic(createRqTopic))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(topicService.createTopic(createRqTopic, userId))
         }
     }
 
@@ -55,7 +68,8 @@ class TopicController: BaseController() {
     fun updateTopic(@PathVariable id: String, @RequestBody updateRqTopic: UpdateRqTopic): ResponseEntity<TopicVO> {
         return processServiceExceptions {
             try {
-                ResponseEntity.ok(topicService.updateTopic(id, updateRqTopic))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(topicService.updateTopic(id, updateRqTopic, userId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Topic with id $id not found", ex)
             }
@@ -66,13 +80,12 @@ class TopicController: BaseController() {
     fun deleteTopic(@PathVariable id: String): ResponseEntity<TopicVO> {
         return processServiceExceptions {
             try {
-                ResponseEntity.ok(topicService.deleteTopic(id))
+                val userId = authorizationService.currentUserIdOrDie()
+                ResponseEntity.ok(topicService.deleteTopic(id, userId))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Topic with id $id not found", ex)
             }
         }
     }
-
-
 
 }
