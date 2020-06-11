@@ -10,8 +10,8 @@ import digital.tutors.constructor.vo.VO
 
 data class ProgressVO(
         val id: String?,
-        val lessonProgress: LessonProgress?,
-        val topicProgress: TopicProgress?,
+        val lessonProgress: List<LessonProgress>?,
+        val topicProgress: List<TopicProgress>?,
         val student: UserVO?
 ): VO
 

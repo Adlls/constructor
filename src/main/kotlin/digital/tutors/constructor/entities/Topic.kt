@@ -21,7 +21,7 @@ data class Topic(
 
         var relations: RelationToTopic? = null
 
-        ): AuditableEntity(), Entity, RelationEntities
+        ): AuditableEntity(), Entity
 
 data class Fgos (
         var numFgos: String? = null,

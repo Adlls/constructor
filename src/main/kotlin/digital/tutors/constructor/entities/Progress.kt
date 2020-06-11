@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document
 data class Progress(
         @Id
         var id: String? = null,
-        var lessonProgress: LessonProgress? = null,
-        var topicProgress: TopicProgress? = null,
+        var lessonProgress: List<LessonProgress>? = null,
+        var topicProgress: List<TopicProgress>? = null,
         var student: User? = null
 ): Entity
 

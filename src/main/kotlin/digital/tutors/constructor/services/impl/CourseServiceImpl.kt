@@ -4,9 +4,10 @@ import digital.tutors.constructor.auth.entities.User
 import digital.tutors.constructor.auth.repositories.UserRepository
 import digital.tutors.constructor.auth.services.impl.UserServiceImpl
 import digital.tutors.constructor.core.exception.EntityNotFoundException
-import digital.tutors.constructor.entities.Course
+import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.CourseRepository
 import digital.tutors.constructor.services.CourseService
+import digital.tutors.constructor.services.ProgressService
 import digital.tutors.constructor.vo.course.CourseVO
 import digital.tutors.constructor.vo.course.CreateRqCourse
 import digital.tutors.constructor.vo.course.CreatorCourseVO
@@ -30,6 +31,9 @@ class CourseServiceImpl: CourseService {
     @Autowired
     lateinit var userRepository: UserRepository
 
+    @Autowired
+    lateinit var progressService: ProgressService
+
 
     fun getUser(userId: String): User {
         return  userRepository.findByIdOrNull(userId)
@@ -48,6 +52,25 @@ class CourseServiceImpl: CourseService {
                 typeAccess = createRqCourse.typeAccess
             }).id ?: throw IllegalArgumentException("Bad id returned")
             log.debug("Created course $id")
+            /*
+                TODO: Создаем для каждого фолловера (студента) свою таблицу с прогрессом
+                      (пока пустым)
+            */
+            val course = getCourseById(id)
+            val lessons = mutableListOf(LessonProgress().apply {
+                progress = 0
+                lesson = Lesson().apply {
+
+                }
+            })
+            val topics = mutableListOf(TopicProgress().apply {
+                progress = 0
+                topic = Topic().apply { }
+            })
+            course.followers?.forEach {
+                progressService.createProgress(lessons, topics, it.id.toString())
+            }
+
             return getCourseById(id)
     }
 

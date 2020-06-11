@@ -3,12 +3,10 @@ package digital.tutors.constructor.services.impl
 import digital.tutors.constructor.auth.entities.User
 import digital.tutors.constructor.auth.services.impl.UserServiceImpl
 import digital.tutors.constructor.core.exception.EntityNotFoundException
-import digital.tutors.constructor.entities.Course
-import digital.tutors.constructor.entities.Lesson
-import digital.tutors.constructor.entities.Level
-import digital.tutors.constructor.entities.Topic
+import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.LessonRepository
 import digital.tutors.constructor.services.LessonService
+import digital.tutors.constructor.services.ProgressService
 import digital.tutors.constructor.vo.VO
 import digital.tutors.constructor.vo.lesson.CreateRqLesson
 import digital.tutors.constructor.vo.lesson.CreatorLessonVO
@@ -28,8 +26,10 @@ class LessonServiceImpl: LessonService {
     private val log = LoggerFactory.getLogger(UserServiceImpl::class.java)
 
     @Autowired
-    lateinit var lessonRepository :LessonRepository
+    lateinit var lessonRepository: LessonRepository
 
+    @Autowired
+    lateinit var progressService: ProgressService
 
     @Throws(EntityNotFoundException::class)
     override fun getAllLessons(pageable: Pageable): Page<LessonVO> {
@@ -52,6 +52,24 @@ class LessonServiceImpl: LessonService {
             levels = createRqLesson.levels?.map { Level(it.id) }
         }).id ?: throw IllegalArgumentException("Bad id request")
         log.debug("Created lesson $id")
+
+        val lesson = lessonRepository.findLessonById(id)
+        val topic = lesson.topic
+        val course = topic?.course
+
+        val lessons = mutableListOf(LessonProgress().apply {
+            progress = 0
+            this.lesson = lesson
+        })
+        val topics = mutableListOf(TopicProgress().apply {
+            progress = 0
+            this.topic = topic
+        })
+        course?.followers?.forEach {
+            progressService.createProgress(lessons, topics, it.id.toString())
+
+        }
+
         return getLessonById(id)
     }
 

@@ -39,20 +39,17 @@ class TopicServiceImpl: TopicService {
 
     override fun createTopic(createRqTopic: CreateRqTopic): TopicVO {
         val id = topicRepository.save(Topic().apply {
-            /*
             title = createRqTopic.title
             tags = createRqTopic.tags
-
             author = User(id = createRqTopic.author?.id)
             course = Course(id = createRqTopic.course?.id)
             fgos = createRqTopic.fgos
             profStandard = createRqTopic.profStandard
             relations = createRqTopic.relations
-
-             */
         }).id ?: throw IllegalArgumentException("Bad id request")
 
         log.debug("Created topic $id")
+
         return getTopicById(id)
     }
     @Throws(EntityNotFoundException::class)
