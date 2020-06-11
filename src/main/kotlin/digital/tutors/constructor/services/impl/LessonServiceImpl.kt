@@ -31,6 +31,26 @@ class LessonServiceImpl: LessonService {
     @Autowired
     lateinit var progressService: ProgressService
 
+    fun createProgressForFollowersByLesson(lessonId: String) {
+         /*
+             TODO: Создаем для каждого фолловера (студента) свою таблицу с прогрессами разных занятий
+                   (пока пустым)
+         */
+        val lesson = lessonRepository.findLessonById(lessonId)
+        val topic = lesson.topic
+        val course = topic?.course
+
+        val lessons = mutableListOf(LessonProgress().apply {
+            progress = 0
+            //this.lesson = lesson
+            this.lesson = Lesson(id = lessonId)
+        })
+        course?.followers?.forEach {
+            progressService.createProgress(lessons, it.id.toString())
+
+        }
+    }
+
     @Throws(EntityNotFoundException::class)
     override fun getAllLessons(pageable: Pageable): Page<LessonVO> {
         return lessonRepository.findAll(pageable).map(::toVO)
@@ -52,24 +72,7 @@ class LessonServiceImpl: LessonService {
             levels = createRqLesson.levels?.map { Level(it.id) }
         }).id ?: throw IllegalArgumentException("Bad id request")
         log.debug("Created lesson $id")
-
-        val lesson = lessonRepository.findLessonById(id)
-        val topic = lesson.topic
-        val course = topic?.course
-
-        val lessons = mutableListOf(LessonProgress().apply {
-            progress = 0
-            this.lesson = lesson
-        })
-        val topics = mutableListOf(TopicProgress().apply {
-            progress = 0
-            this.topic = topic
-        })
-        course?.followers?.forEach {
-            progressService.createProgress(lessons, topics, it.id.toString())
-
-        }
-
+        createProgressForFollowersByLesson(id)
         return getLessonById(id)
     }
 

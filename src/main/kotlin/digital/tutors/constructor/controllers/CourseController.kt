@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException
 class CourseController: BaseController() {
 
     @Autowired
-    lateinit var courseService :CourseService
+    lateinit var courseService: CourseService
 
     @Autowired
     lateinit var authorizationService :AuthorizationService

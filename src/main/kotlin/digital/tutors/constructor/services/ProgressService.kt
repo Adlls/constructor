@@ -13,15 +13,12 @@ interface ProgressService {
     fun getProgressByLessonId(idLesson: String): List<ProgressVO>
 
     @Throws(EntityNotFoundException::class)
-    fun getProgressByTopicId(idTopic: String): List<ProgressVO>
-
-    @Throws(EntityNotFoundException::class)
     fun getProgressById(idProgress: String): ProgressVO
 
     @Throws(EntityNotFoundException::class)
     fun getProgress(pageable: Pageable): Page<ProgressVO>
 
-    fun createProgress(lessonProgress: List<LessonProgress>, topicProgress: List<TopicProgress>, userId: String): ProgressVO
+    fun createProgress(lessonProgress: List<LessonProgress>, userId: String): ProgressVO
 
     @Throws(EntityNotFoundException::class)
     fun updateProgress(): ProgressVO

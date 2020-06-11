@@ -36,13 +36,11 @@ class ProgressServiceImpl: ProgressService {
     lateinit var userRepository: UserRepository
 
     override fun getProgressByLessonId(idLesson: String): List<ProgressVO> {
+        TODO("Not yet implemented")
+        /*
         val lesson = lessonRepository.findLessonById(idLesson)
         return progressRepository.findAllByLessonProgressLesson(lesson).map(::toProgressVO)
-    }
-
-    override fun getProgressByTopicId(idTopic: String): List<ProgressVO> {
-        val topic = topicRepository.findTopicById(idTopic)
-        return progressRepository.findAllByTopicProgressProgress(topic).map(::toProgressVO)
+        */
     }
 
     override fun getProgressById(idProgress: String): ProgressVO {
@@ -55,15 +53,21 @@ class ProgressServiceImpl: ProgressService {
         TODO("Not yet implemented")
     }
 
-    override fun createProgress(lessonProgress: List<LessonProgress>, topicProgress: List<TopicProgress>, userId: String): ProgressVO {
-      val user = userRepository.findUserById(userId)
-      val id = progressRepository.save(Progress().apply {
-            this.lessonProgress = lessonProgress
-            this.topicProgress = topicProgress
-            student = user
-        }).id?: throw IllegalArgumentException("Bad request")
-
-        return getProgressById(id)
+    override fun createProgress(lessonProgress: List<LessonProgress>, userId: String): ProgressVO {
+        return if (progressRepository.existsProgressByStudentId(userId)) {
+            val id =  progressRepository.save(progressRepository.findByStudentId(userId).get().apply {
+                this.lessonProgress = this.lessonProgress?.plus(lessonProgress)
+                student = User(id = userId)
+            }).id?: throw IllegalArgumentException("Bad request")
+            getProgressById(id)
+        } else {
+            println("No Exist")
+            val id = progressRepository.save(Progress().apply {
+                this.lessonProgress = lessonProgress
+                student = User(id = userId)
+            }).id?: throw IllegalArgumentException("Bad request")
+            getProgressById(id)
+        }
     }
 
     override fun updateProgress(): ProgressVO {
