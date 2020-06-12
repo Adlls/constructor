@@ -7,7 +7,7 @@ import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.LessonRepository
 import digital.tutors.constructor.services.LessonService
 import digital.tutors.constructor.services.ProgressService
-import digital.tutors.constructor.vo.VO
+import digital.tutors.constructor.services.TestService
 import digital.tutors.constructor.vo.lesson.CreateRqLesson
 import digital.tutors.constructor.vo.lesson.CreatorLessonVO
 import digital.tutors.constructor.vo.lesson.LessonVO
@@ -18,7 +18,6 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
-import javax.swing.text.html.parser.Entity
 
 @Service
 class LessonServiceImpl: LessonService {
@@ -33,20 +32,18 @@ class LessonServiceImpl: LessonService {
 
     fun createProgressForFollowersByLesson(lessonId: String) {
          /*
-             TODO: Создаем для каждого фолловера (студента) свою таблицу с прогрессами разных занятий
-                   (пока пустым)
+             TODO: Создаем для каждого фолловера (студента) свою таблицу
+                   с прогрессами разных занятий одного курса (пока пустым)
          */
         val lesson = lessonRepository.findLessonById(lessonId)
         val topic = lesson.topic
         val course = topic?.course
 
         val lessons = mutableListOf(LessonProgress().apply {
-            progress = 0
-            //this.lesson = lesson
             this.lesson = Lesson(id = lessonId)
         })
         course?.followers?.forEach {
-            progressService.createProgress(lessons, it.id.toString())
+            progressService.createLessonProgress(lessons, it.id.toString())
 
         }
     }
@@ -78,6 +75,7 @@ class LessonServiceImpl: LessonService {
 
     @Throws(EntityNotFoundException::class)
     override fun updateLesson(id: String, updateRqLesson: UpdateRqLesson): LessonVO {
+
         lessonRepository.save(lessonRepository.findById(id).get().apply {
             topic = Topic(id = updateRqLesson.topic?.id)
             relations = updateRqLesson.relations

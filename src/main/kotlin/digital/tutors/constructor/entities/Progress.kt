@@ -20,7 +20,7 @@ data class Progress(
 */
 
 data class LessonProgress (
-        var progress: Int? = null,
+        var completed: Boolean? = false,
         var currentLevel: Int? = 1,
         var lesson: Lesson? = null
 )

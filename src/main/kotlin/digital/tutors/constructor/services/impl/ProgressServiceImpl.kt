@@ -9,10 +9,12 @@ import digital.tutors.constructor.repositories.LessonRepository
 import digital.tutors.constructor.repositories.ProgressRepository
 import digital.tutors.constructor.repositories.TopicRepository
 import digital.tutors.constructor.services.ProgressService
+import digital.tutors.constructor.services.TestService
 import digital.tutors.constructor.vo.progress.CreatorProgressVO
 import digital.tutors.constructor.vo.progress.ProgressVO
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.data.domain.Page
 import org.springframework.stereotype.Service
 import java.awt.print.Pageable
@@ -25,6 +27,9 @@ class ProgressServiceImpl: ProgressService {
 
     @Autowired
     lateinit var progressRepository: ProgressRepository
+
+    @Autowired
+    lateinit var testService: TestService
 
     @Autowired
     lateinit var lessonRepository: LessonRepository
@@ -53,15 +58,13 @@ class ProgressServiceImpl: ProgressService {
         TODO("Not yet implemented")
     }
 
-    override fun createProgress(lessonProgress: List<LessonProgress>, userId: String): ProgressVO {
+    override fun createLessonProgress(lessonProgress: List<LessonProgress>, userId: String): ProgressVO {
         return if (progressRepository.existsProgressByStudentId(userId)) {
             val id =  progressRepository.save(progressRepository.findByStudentId(userId).get().apply {
                 this.lessonProgress = this.lessonProgress?.plus(lessonProgress)
-                student = User(id = userId)
             }).id?: throw IllegalArgumentException("Bad request")
             getProgressById(id)
         } else {
-            println("No Exist")
             val id = progressRepository.save(Progress().apply {
                 this.lessonProgress = lessonProgress
                 student = User(id = userId)
@@ -70,11 +73,40 @@ class ProgressServiceImpl: ProgressService {
         }
     }
 
-    override fun updateProgress(): ProgressVO {
-        TODO("Not yet implemented")
+    override fun updateProgress(idLesson: String, userId: String, answerTest: Int): ProgressVO {
+
+        val progress = progressRepository.findByStudentId(userId).orElseThrow {
+           throw EntityNotFoundException("Not found progress by student id $userId")
+       }
+        val lesson = lessonRepository.findById(idLesson).orElseThrow {
+            throw EntityNotFoundException("Not found lesson by id $idLesson")
+        }
+        val resultTestByLesson = testService.getResultByLessonId(answerTest, idLesson)
+
+        progress.lessonProgress?.forEach {
+           if (idLesson == it.lesson?.id) {
+               if (resultTestByLesson)  {
+                   it.completed = true
+                }
+                else if (!resultTestByLesson) {
+                   if (it.currentLevel != lesson.levels?.size) {
+                       it.currentLevel = it.currentLevel?.plus(1)
+                   }
+                }
+           }
+           else {
+               println("lesson is not found")
+               throw EntityNotFoundException("Not found lesson $idLesson in progress ${progress.id}")
+           }
+        }
+
+        progressRepository.save(progress)
+        log.debug("updated progress by lesson id $idLesson")
+        return getProgressById(progress.id.toString())
+
     }
 
-    override fun deleteProgress(): ProgressVO {
+    override fun deleteProgress(idProgress: String): ProgressVO {
         TODO("Not yet implemented")
     }
 
