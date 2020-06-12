@@ -6,8 +6,8 @@ import digital.tutors.constructor.core.exception.EntityNotFoundException
 import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.LessonRepository
 import digital.tutors.constructor.services.LessonService
+import digital.tutors.constructor.services.LevelService
 import digital.tutors.constructor.services.ProgressService
-import digital.tutors.constructor.services.TestService
 import digital.tutors.constructor.vo.lesson.CreateRqLesson
 import digital.tutors.constructor.vo.lesson.CreatorLessonVO
 import digital.tutors.constructor.vo.lesson.LessonVO
@@ -30,6 +30,9 @@ class LessonServiceImpl: LessonService {
     @Autowired
     lateinit var progressService: ProgressService
 
+    @Autowired
+    lateinit var levelService: LevelService
+
     fun createProgressForFollowersByLesson(lessonId: String) {
          /*
              TODO: Создаем для каждого фолловера (студента) свою таблицу
@@ -46,6 +49,14 @@ class LessonServiceImpl: LessonService {
             progressService.createLessonProgress(lessons, it.id.toString())
 
         }
+    }
+
+    fun createLevel(idLesson: String, level: BodyLevel) {
+        val idLevels = levelService.createLevel(idLesson, level).id
+
+        lessonRepository.save(lessonRepository.findById(idLesson).get().apply {
+            levels = Levels(id = idLevels)
+        })
     }
 
     @Throws(EntityNotFoundException::class)
@@ -66,10 +77,17 @@ class LessonServiceImpl: LessonService {
             author = User(id = createRqLesson.author?.id)
             topic = Topic(id = createRqLesson.topic?.id)
             relations = createRqLesson.relations
-            levels = createRqLesson.levels?.map { Level(it.id) }
+           // levels = Levels(id = createRqLesson.levels?.id)
         }).id ?: throw IllegalArgumentException("Bad id request")
         log.debug("Created lesson $id")
+        /* TODO: Поумолчанию создаем прогресс */
         createProgressForFollowersByLesson(id)
+        /* TODO: Поумолчанию создаем уровень */
+        val level = BodyLevel().apply {
+            htmlBody = "1 хотим добавить..."
+            numLevel = 1
+        }
+        createLevel(id, level)
         return getLessonById(id)
     }
 
@@ -79,7 +97,7 @@ class LessonServiceImpl: LessonService {
         lessonRepository.save(lessonRepository.findById(id).get().apply {
             topic = Topic(id = updateRqLesson.topic?.id)
             relations = updateRqLesson.relations
-            levels = updateRqLesson.levels?.map { Level(id = it.id) }
+            levels = Levels(id = updateRqLesson.levels?.id)
         })
         log.debug("Updated lesson $id")
         return getLessonById(id)

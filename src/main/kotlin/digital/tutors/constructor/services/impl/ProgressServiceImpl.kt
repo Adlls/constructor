@@ -6,8 +6,10 @@ import digital.tutors.constructor.auth.services.impl.UserServiceImpl
 import digital.tutors.constructor.core.exception.EntityNotFoundException
 import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.LessonRepository
+import digital.tutors.constructor.repositories.LevelRepository
 import digital.tutors.constructor.repositories.ProgressRepository
 import digital.tutors.constructor.repositories.TopicRepository
+import digital.tutors.constructor.services.LevelService
 import digital.tutors.constructor.services.ProgressService
 import digital.tutors.constructor.services.TestService
 import digital.tutors.constructor.vo.progress.CreatorProgressVO
@@ -30,6 +32,9 @@ class ProgressServiceImpl: ProgressService {
 
     @Autowired
     lateinit var testService: TestService
+
+    @Autowired
+    lateinit var levelRepository: LevelRepository
 
     @Autowired
     lateinit var lessonRepository: LessonRepository
@@ -81,6 +86,10 @@ class ProgressServiceImpl: ProgressService {
         val lesson = lessonRepository.findById(idLesson).orElseThrow {
             throw EntityNotFoundException("Not found lesson by id $idLesson")
         }
+        val level = lesson.levels
+
+        val maxLevel = level?.bodyLevels?.size
+
         val resultTestByLesson = testService.getResultByLessonId(answerTest, idLesson)
 
         progress.lessonProgress?.forEach {
@@ -89,7 +98,7 @@ class ProgressServiceImpl: ProgressService {
                    it.completed = true
                 }
                 else if (!resultTestByLesson) {
-                   if (it.currentLevel != lesson.levels?.size) {
+                   if (it.currentLevel != maxLevel) {
                        it.currentLevel = it.currentLevel?.plus(1)
                    }
                 }

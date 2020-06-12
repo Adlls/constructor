@@ -14,7 +14,7 @@ data class LessonVO(
         val author: UserVO?,
         val topic: TopicVO?,
         val relations: RelationToLesson?,
-        val levels: List<LevelVO>?
+        val levels: LevelVO?
 ): VO
 
 
@@ -27,7 +27,7 @@ class CreatorLessonVO {
                     lesson.author?.let { UserVO.fromData(it, null) },
                     lesson.topic?.let { CreatorTopicVO.fromData(it) } as TopicVO?,
                     lesson.relations,
-                    lesson.levels?.map { CreatorLevelVO.fromData(it) as LevelVO }
+                    lesson.levels?.let { CreatorLevelVO.fromData(it) } as LevelVO?
             )
         }
     }

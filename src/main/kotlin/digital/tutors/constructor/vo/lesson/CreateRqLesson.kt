@@ -7,5 +7,5 @@ data class CreateRqLesson(
         val author: EntityRefRq?,
         val topic: EntityRefRq?,
         val relations: RelationToLesson?,
-        val levels: List<EntityRefRq>?
+        val levels: EntityRefRq?
 )
