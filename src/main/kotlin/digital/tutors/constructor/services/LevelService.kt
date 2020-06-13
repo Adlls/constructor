@@ -9,8 +9,12 @@ interface LevelService {
 
     fun createLevel(idLesson: String, bodyLevel: BodyLevel): LevelVO
 
+    fun addLevel(idLesson: String, htmlBody: String, numLevel: Int)
+
+    fun disenableLevel(idLesson: String, numLevel: Int)
+
     @Throws(EntityNotFoundException::class)
-    fun updateLevel(): LevelVO
+    fun updateLevel(idLesson: String, numLevel: Int, htmlBody: String): LevelVO
 
     @Throws(EntityNotFoundException::class)
     fun findLevelById(id: String): LevelVO

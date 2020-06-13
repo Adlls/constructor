@@ -51,8 +51,44 @@ class LevelServiceImpl: LevelService {
         }
     }
 
-    override fun updateLevel(): LevelVO {
-        TODO("Not yet implemented")
+    override fun addLevel(idLesson: String, htmlBody: String, numLevel: Int) {
+        val level = levelRepository.findByLessonId(idLesson).orElseThrow {
+            throw EntityNotFoundException("Not found level with lesson id $idLesson")
+        }
+
+        val bodyLevel = BodyLevel().apply {
+            this.htmlBody = htmlBody
+            this.numLevel = numLevel
+        }
+
+        level.bodyLevels?.plus(bodyLevel)
+
+        levelRepository.save(level)
+    }
+
+    override fun disenableLevel(idLesson: String, numLevel: Int) {
+        val level = levelRepository.findByLessonId(idLesson).orElseThrow {
+            throw EntityNotFoundException("Not found level with lesson id $idLesson")
+        }
+        level.bodyLevels?.forEach {
+            if (it.numLevel == numLevel) {
+                it.enabled = false
+            }
+        }
+        levelRepository.save(level)
+    }
+
+    override fun updateLevel(idLesson: String, numLevel: Int, htmlBody: String): LevelVO {
+        val level = levelRepository.findByLessonId(idLesson).orElseThrow {
+            throw EntityNotFoundException("Not found level with lesson id $idLesson")
+        }
+
+        level.bodyLevels?.forEach {
+            if (it.numLevel == numLevel) it.htmlBody = htmlBody
+        }
+        levelRepository.save(level)
+
+        return findLevelById(level.id.toString())
     }
 
     override fun findLevelById(id: String): LevelVO {
