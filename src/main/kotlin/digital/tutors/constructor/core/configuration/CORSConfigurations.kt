@@ -14,6 +14,7 @@ class CORSConfiguration : WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "OPTIONS", "PUT", "PATCH", "DELETE")
+
     }
 
     override fun addResourceHandlers(registry: ResourceHandlerRegistry) {
@@ -21,6 +22,7 @@ class CORSConfiguration : WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/")
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/")
+
     }
 
 }

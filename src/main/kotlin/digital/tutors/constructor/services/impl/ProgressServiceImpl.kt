@@ -5,10 +5,8 @@ import digital.tutors.constructor.auth.repositories.UserRepository
 import digital.tutors.constructor.auth.services.impl.UserServiceImpl
 import digital.tutors.constructor.core.exception.EntityNotFoundException
 import digital.tutors.constructor.entities.*
-import digital.tutors.constructor.repositories.LessonRepository
-import digital.tutors.constructor.repositories.LevelRepository
-import digital.tutors.constructor.repositories.ProgressRepository
-import digital.tutors.constructor.repositories.TopicRepository
+import digital.tutors.constructor.repositories.*
+import digital.tutors.constructor.services.LessonService
 import digital.tutors.constructor.services.LevelService
 import digital.tutors.constructor.services.ProgressService
 import digital.tutors.constructor.services.TestService
@@ -45,6 +43,16 @@ class ProgressServiceImpl: ProgressService {
     @Autowired
     lateinit var userRepository: UserRepository
 
+    @Autowired
+    lateinit var courseRepository: CourseRepository
+
+    @Autowired
+    lateinit var courseServiceImpl: CourseServiceImpl
+
+    @Autowired
+    lateinit var lessonService: LessonService
+
+
     override fun getProgressByLessonId(idLesson: String): List<ProgressVO> {
         TODO("Not yet implemented")
         /*
@@ -52,6 +60,8 @@ class ProgressServiceImpl: ProgressService {
         return progressRepository.findAllByLessonProgressLesson(lesson).map(::toProgressVO)
         */
     }
+
+
 
     override fun getProgressById(idProgress: String): ProgressVO {
         return progressRepository.findById(idProgress).map(::toProgressVO).orElseThrow {
@@ -76,6 +86,28 @@ class ProgressServiceImpl: ProgressService {
             }).id?: throw IllegalArgumentException("Bad request")
             getProgressById(id)
         }
+    }
+
+    override fun getProgressByCourseId(courseId: String): List<ProgressVO> {
+        var lessons = lessonService.getLessonsByCourseId(courseId)
+        var progress: List<ProgressVO> = progressRepository.findAll().map(::toProgressVO)
+        var resultProgress = arrayListOf<ProgressVO>()
+
+        progress.forEach {
+           for (lessonProgress in it.lessonProgress!!) {
+               for (lesson in lessons) {
+                   if (lessonProgress.lesson?.id == lesson.id) {
+                       resultProgress.add(it)
+                   }
+               }
+            }
+        }
+        print(resultProgress)
+        return resultProgress
+    }
+
+    override fun getProgressByStudentId(idStudent: String): List<ProgressVO> {
+        return progressRepository.findAllByStudentId(idStudent).map(::toProgressVO)
     }
 
     override fun updateProgress(idLesson: String, userId: String, answerTest: Int): ProgressVO {

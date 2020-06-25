@@ -21,6 +21,8 @@ interface TopicService {
 
     fun createTopic(createRqTopic: CreateRqTopic): TopicVO
 
+    fun getTopicByCourseId(courseId: String): TopicVO
+
     @Throws(EntityNotFoundException::class)
     fun updateTopic(id: String, updateRqTopic: UpdateRqTopic): TopicVO
 

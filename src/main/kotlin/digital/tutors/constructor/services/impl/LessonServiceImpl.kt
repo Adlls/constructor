@@ -8,6 +8,7 @@ import digital.tutors.constructor.repositories.LessonRepository
 import digital.tutors.constructor.services.LessonService
 import digital.tutors.constructor.services.LevelService
 import digital.tutors.constructor.services.ProgressService
+import digital.tutors.constructor.services.TopicService
 import digital.tutors.constructor.vo.lesson.CreateRqLesson
 import digital.tutors.constructor.vo.lesson.CreatorLessonVO
 import digital.tutors.constructor.vo.lesson.LessonVO
@@ -32,6 +33,9 @@ class LessonServiceImpl: LessonService {
 
     @Autowired
     lateinit var levelService: LevelService
+
+    @Autowired
+    lateinit var topicService: TopicService
 
     fun createProgressForFollowersByLesson(lessonId: String) {
          /*
@@ -71,6 +75,13 @@ class LessonServiceImpl: LessonService {
         }
     }
 
+    override fun getLessonsByCourseId(idCourse: String): List<LessonVO> {
+        //var lessons: List<LessonVO>
+        var topicId = topicService.getTopicByCourseId(idCourse).id
+        var lessons = topicId?.let { lessonRepository.findLessonsByTopicId(it).map(::toVO) }
+        return lessons!!
+    }
+
     @Throws(EntityNotFoundException::class)
     override fun createLesson(createRqLesson: CreateRqLesson): LessonVO {
         val id = lessonRepository.save(Lesson().apply {
@@ -84,7 +95,7 @@ class LessonServiceImpl: LessonService {
         createProgressForFollowersByLesson(id)
         /* TODO: Поумолчанию создаем уровень */
         val level = BodyLevel().apply {
-            htmlBody = "1 хотим добавить..."
+            htmlBody = "<body> ... </body>"
             numLevel = 1
         }
         createLevel(id, level)

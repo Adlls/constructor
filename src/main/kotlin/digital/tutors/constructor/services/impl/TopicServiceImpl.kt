@@ -52,6 +52,13 @@ class TopicServiceImpl: TopicService {
 
         return getTopicById(id)
     }
+
+    override fun getTopicByCourseId(courseId: String): TopicVO {
+        return topicRepository.findTopicByCourseId(courseId).map(::toVO).orElseThrow {
+            throw EntityNotFoundException("not found")
+        }
+    }
+
     @Throws(EntityNotFoundException::class)
     override fun updateTopic(id: String, updateRqTopic: UpdateRqTopic): TopicVO {
         topicRepository.save(topicRepository.findById(id).get().apply {

@@ -24,6 +24,7 @@ interface CourseService {
     @Throws(EntityNotFoundException::class)
     fun getCourseById(id: String): CourseVO
 
+
     @Throws(EntityNotFoundException::class)
     fun deleteCourse(id: String): CourseVO
 

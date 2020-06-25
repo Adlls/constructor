@@ -1,5 +1,6 @@
 package digital.tutors.constructor.services.impl
 
+import com.mongodb.MongoClient
 import digital.tutors.constructor.auth.entities.User
 import digital.tutors.constructor.auth.repositories.UserRepository
 import digital.tutors.constructor.auth.services.impl.UserServiceImpl
@@ -7,6 +8,7 @@ import digital.tutors.constructor.core.exception.EntityNotFoundException
 import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.CourseRepository
 import digital.tutors.constructor.services.CourseService
+import digital.tutors.constructor.services.ProgressService
 import digital.tutors.constructor.vo.course.CourseVO
 import digital.tutors.constructor.vo.course.CreateRqCourse
 import digital.tutors.constructor.vo.course.CreatorCourseVO
@@ -15,6 +17,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.lang.IllegalArgumentException
@@ -30,6 +35,8 @@ class CourseServiceImpl: CourseService {
     @Autowired
     lateinit var userRepository: UserRepository
 
+    @Autowired
+    lateinit var progressService: ProgressService
 
     fun getUser(userId: String): User {
         return  userRepository.findByIdOrNull(userId)
@@ -79,8 +86,6 @@ class CourseServiceImpl: CourseService {
             throw EntityNotFoundException("Course with $id not found")
         }
     }
-
-
 
     override fun deleteCourse(id: String): CourseVO {
         val course = getCourseById(id)

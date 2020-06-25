@@ -18,6 +18,8 @@ interface LessonService {
     @Throws(EntityNotFoundException::class)
     fun getLessonById(id: String): LessonVO
 
+    fun getLessonsByCourseId(idCourse: String): List<LessonVO>
+
     @Throws(EntityNotFoundException::class)
     fun createLesson(createRqLesson: CreateRqLesson): LessonVO
 

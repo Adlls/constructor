@@ -31,7 +31,7 @@ class CourseController: BaseController() {
 
             try {
                 val userId = authorizationService.currentUserIdOrDie()
-                val pageRequest = PageRequest.of(page, 10)
+                val pageRequest = PageRequest.of(page, 100)
                 ResponseEntity.ok(courseService.getAllCourses(pageRequest))
             } catch (ex: EntityNotFoundException) {
                 throw ResponseStatusException(HttpStatus.NOT_FOUND, "Courses not found", ex)
