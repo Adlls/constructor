@@ -57,7 +57,8 @@ class LessonServiceImpl: LessonService {
 
     fun createLevel(idLesson: String, level: BodyLevel) {
         val idLevels = levelService.createLevel(idLesson, level).id
-
+       // level.htmlBody?.let { levelService.addLevel(idLesson, it, 2) }
+       // level.htmlBody?.let { levelService.addLevel(idLesson, it, 3) }
         lessonRepository.save(lessonRepository.findById(idLesson).get().apply {
             levels = Levels(id = idLevels)
         })
@@ -99,6 +100,8 @@ class LessonServiceImpl: LessonService {
             numLevel = 1
         }
         createLevel(id, level)
+        levelService.addLevel(id, level.htmlBody, 2);
+        levelService.addLevel(id, level.htmlBody, 3);
         return getLessonById(id)
     }
 

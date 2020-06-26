@@ -5,10 +5,12 @@ import digital.tutors.constructor.core.exception.EntityNotFoundException
 import digital.tutors.constructor.entities.BodyLevel
 import digital.tutors.constructor.entities.Lesson
 import digital.tutors.constructor.entities.Levels
+import digital.tutors.constructor.entities.Topic
 import digital.tutors.constructor.repositories.LevelRepository
 import digital.tutors.constructor.services.LevelService
 import digital.tutors.constructor.vo.level.CreatorLevelVO
 import digital.tutors.constructor.vo.level.LevelVO
+import digital.tutors.constructor.vo.level.UpdateRqLevels
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -51,7 +53,7 @@ class LevelServiceImpl: LevelService {
         }
     }
 
-    override fun addLevel(idLesson: String, htmlBody: String, numLevel: Int) {
+    override fun addLevel(idLesson: String, htmlBody: String?, numLevel: Int) {
         val level = levelRepository.findByLessonId(idLesson).orElseThrow {
             throw EntityNotFoundException("Not found level with lesson id $idLesson")
         }
@@ -61,8 +63,7 @@ class LevelServiceImpl: LevelService {
             this.numLevel = numLevel
         }
 
-        level.bodyLevels?.plus(bodyLevel)
-
+        (level.bodyLevels as ArrayList<BodyLevel>).add(bodyLevel)
         levelRepository.save(level)
     }
 
@@ -89,6 +90,14 @@ class LevelServiceImpl: LevelService {
         levelRepository.save(level)
 
         return findLevelById(level.id.toString())
+    }
+
+    override fun updateLevels(id: String, updateRqLevels: UpdateRqLevels): LevelVO {
+        levelRepository.save(levelRepository.findById(id).get().apply {
+            bodyLevels =  updateRqLevels.bodyLevels
+        })
+        log.debug("Updated levels $id")
+        return findLevelById(id)
     }
 
     override fun findLevelById(id: String): LevelVO {
