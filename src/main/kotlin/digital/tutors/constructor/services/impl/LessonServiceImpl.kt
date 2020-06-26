@@ -79,19 +79,21 @@ class LessonServiceImpl: LessonService {
     override fun getLessonsByCourseId(idCourse: String): List<LessonVO> {
         //var lessons: List<LessonVO>
         var topicId = topicService.getTopicByCourseId(idCourse).id
+        println(topicId);
         var lessons = topicId?.let { lessonRepository.findLessonsByTopicId(it).map(::toVO) }
+
         return lessons!!
     }
 
     @Throws(EntityNotFoundException::class)
     override fun createLesson(createRqLesson: CreateRqLesson): LessonVO {
         val id = lessonRepository.save(Lesson().apply {
-            author = User(id = createRqLesson.author?.id)
-            topic = Topic(id = createRqLesson.topic?.id)
+            author = User(createRqLesson.author?.id)
+            topic = Topic(createRqLesson.topic?.id)
             relations = createRqLesson.relations
-           // levels = Levels(id = createRqLesson.levels?.id)
         }).id ?: throw IllegalArgumentException("Bad id request")
         log.debug("Created lesson $id")
+        //println(createRqLesson.topic?.id)
         /* TODO: Поумолчанию создаем прогресс */
         createProgressForFollowersByLesson(id)
         /* TODO: Поумолчанию создаем уровень */
@@ -99,6 +101,8 @@ class LessonServiceImpl: LessonService {
             htmlBody = "<body> ... </body>"
             numLevel = 1
         }
+
+
         createLevel(id, level)
         levelService.addLevel(id, level.htmlBody, 2);
         levelService.addLevel(id, level.htmlBody, 3);

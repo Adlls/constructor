@@ -6,10 +6,7 @@ import digital.tutors.constructor.auth.services.impl.UserServiceImpl
 import digital.tutors.constructor.core.exception.EntityNotFoundException
 import digital.tutors.constructor.entities.*
 import digital.tutors.constructor.repositories.*
-import digital.tutors.constructor.services.LessonService
-import digital.tutors.constructor.services.LevelService
-import digital.tutors.constructor.services.ProgressService
-import digital.tutors.constructor.services.TestService
+import digital.tutors.constructor.services.*
 import digital.tutors.constructor.vo.progress.CreatorProgressVO
 import digital.tutors.constructor.vo.progress.ProgressVO
 import org.slf4j.LoggerFactory
@@ -47,7 +44,7 @@ class ProgressServiceImpl: ProgressService {
     lateinit var courseRepository: CourseRepository
 
     @Autowired
-    lateinit var courseServiceImpl: CourseServiceImpl
+    lateinit var courseService: CourseService
 
     @Autowired
     lateinit var lessonService: LessonService
@@ -77,22 +74,29 @@ class ProgressServiceImpl: ProgressService {
         return if (progressRepository.existsProgressByStudentId(userId)) {
             val id =  progressRepository.save(progressRepository.findByStudentId(userId).get().apply {
                 this.lessonProgress = this.lessonProgress?.plus(lessonProgress)
-            }).id?: throw IllegalArgumentException("Bad request")
+            }).id?: throw IllegalArgumentException("Bad request user student")
             getProgressById(id)
         } else {
             val id = progressRepository.save(Progress().apply {
                 this.lessonProgress = lessonProgress
                 student = User(id = userId)
-            }).id?: throw IllegalArgumentException("Bad request")
+            }).id?: throw IllegalArgumentException("Bad request user student 2")
             getProgressById(id)
         }
     }
 
     override fun getProgressByCourseId(courseId: String): List<ProgressVO> {
-        var lessons = lessonService.getLessonsByCourseId(courseId)
         var progress: List<ProgressVO> = progressRepository.findAll().map(::toProgressVO)
         var resultProgress = arrayListOf<ProgressVO>()
-
+        var course = courseService.getCourseById(courseId);
+        progress.forEach {
+            for (student in course.followers!!) {
+                if (it.student?.id == student.id) {
+                    resultProgress.add(it)
+                }
+            }
+        }
+        /*
         progress.forEach {
            for (lessonProgress in it.lessonProgress!!) {
                for (lesson in lessons) {
@@ -103,6 +107,7 @@ class ProgressServiceImpl: ProgressService {
             }
         }
         print(resultProgress)
+         */
         return resultProgress
     }
 
